@@ -26,6 +26,6 @@ func LoadCondig() (*SiteConfig, error) {
 		JwtSigningKey: []byte(os.Getenv("JWT_SIGNING_KEY")),
 		NewIpWebhook:  os.Getenv("NEW_IP_WEBHOOK"),
 		ServerAddr:    os.Getenv("SERVER_ADDR"),
-		JwtExpiresIn:  time.Second * 120,
+		JwtExpiresIn:  time.Minute * 5,
 	}, nil
 }
