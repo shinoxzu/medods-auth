@@ -1,0 +1,157 @@
+basePath: /
+definitions:
+  controllers.AuthorizeResponse:
+    properties:
+      refreshToken:
+        type: string
+      token:
+        type: string
+    type: object
+  controllers.GetMeResponse:
+    properties:
+      userId:
+        type: string
+    type: object
+  controllers.RefreshRequest:
+    properties:
+      accessToken:
+        type: string
+      refreshToken:
+        type: string
+    type: object
+  responses.ErrorResponse:
+    properties:
+      errorCode:
+        type: integer
+      message:
+        type: string
+    type: object
+  responses.SuccesfullResponse:
+    properties:
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+  title: Medods Auth API
+  version: "1.0"
+paths:
+  /auth:
+    post:
+      parameters:
+      - description: UUID пользователя
+        example: '"123e4567-e89b-12d3-a456-426614174000"'
+        in: query
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.AuthorizeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: Получить новую пару токенов для указанного userId
+      tags:
+      - auth
+  /deauth:
+    post:
+      parameters:
+      - description: JWT-токен в формате Bearer {token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.SuccesfullResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Деавторизоваться
+      tags:
+      - auth
+  /refresh:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные для обновления токенов
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.RefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.AuthorizeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: Обновить токены
+      tags:
+      - auth
+  /users/me:
+    get:
+      parameters:
+      - description: JWT-токен в формате Bearer {token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.GetMeResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Получить информацию о себе
+      tags:
+      - users
+securityDefinitions:
+  ApiKeyAuth:
+    description: Введите токен в формате Bearer {JWT токен}
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
